@@ -10,7 +10,9 @@ A technical note on how GaLoRE minimizes memory overhead during large language m
 When training a massive AI model (e.g., a 7B parameter LLM), the model weights themselves are not the primary VRAM bottleneck. The true memory hog is the **optimizer** (e.g., AdamW).
 
 For every single weight parameter, AdamW must track **two floating-point values** (momentum and variance) to calculate steps accurately.* **Weights (16-bit Precision):** A 7B model requires $\approx$ **14 GB** of VRAM.* **AdamW Optimizer States:** Tracking states for that same model require $\approx$ **28 GB** of VRAM!
-### The Blueprint Analogy* **Full Fine-Tuning:** The GPU maps out and tracks the entire, massive gradient blueprint on a huge canvas. Highly accurate, but requires massive memory infrastructure.* **LoRA (Low-Rank Adaptation):** Freezes the base architecture and hooks up a small, temporary scaffolding system on the side. This is cheap but lacks the capacity to structuralize dense, foundational knowledge.* **GaLoRE:** Compresses the massive gradient blueprint into a compact pocket card (via low-rank projection). The optimizer tracks metrics *only* on this pocket card. When applying updates, the card is scaled back up to full size to modify the foundation directly.
+
+### The Analogy **Full Fine-Tuning:** 
+The GPU maps out and tracks the entire, massive gradient blueprint on a huge canvas. Highly accurate, but requires massive memory infrastructure.* **LoRA (Low-Rank Adaptation):** Freezes the base architecture and hooks up a small, temporary scaffolding system on the side. This is cheap but lacks the capacity to structuralize dense, foundational knowledge.* **GaLoRE:** Compresses the massive gradient blueprint into a compact pocket card (via low-rank projection). The optimizer tracks metrics *only* on this pocket card. When applying updates, the card is scaled back up to full size to modify the foundation directly.
 
 ---
 
