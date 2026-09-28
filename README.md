@@ -26,11 +26,19 @@ GaLoRE achieves full-parameter training efficiency by applying **Singular Value 
 
 ```mermaid
 graph TD
-    A[Forward/Backward Pass] --> B(Full Gradient Matrix G<br/>Dim: m × n)
-    B -->|SVD Truncation<br/>Rank: r| C[Low-Rank Projections P, Q<br/>P: m × r | Q: n × r]
-    C -->|Down-Projection| D(Compressed Core G̃ = PᵀGQ<br/>Dim: r × r)
-    D -->|AdamW State Tracking| E[Update Weights Directly P G̃ Qᵀ<br/>Dim: m × n]
-    E -.->|Every T Steps<br/>update_proj_gap| B
+    A[Forward/Backward Pass] --> B(Full Gradient G<br/>Dim: m × n)
+
+    B -->|SVD / Low-Rank Approximation<br/>Rank: r| C[Projection Matrices P, Q<br/>P: m × r | Q: n × r]
+
+    C -->|Down-Projection| D(Compressed Gradient G̃ = PᵀGQ<br/>Dim: r × r)
+
+    D -->|AdamW<br/>Track m, v in Compressed Space| E[Compressed Update ΔG̃<br/>Dim: r × r]
+
+    E -->|Up-Projection| F(Full-Space Update ΔG = P ΔG̃ Qᵀ<br/>Dim: m × n)
+
+    F -->|Apply Update| G[Weights W ← W − ηΔG<br/>Dim: m × n]
+
+    G -.->|Every T Steps<br/>update_proj_gap| B
 ```
 
 
