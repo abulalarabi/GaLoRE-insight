@@ -25,20 +25,20 @@ The GPU maps out and tracks the entire, massive gradient blueprint on a huge can
 GaLoRE achieves full-parameter training efficiency by applying **Singular Value Decomposition (SVD)** to the *gradients*, rather than freezing weights or using adapters.
 
 ```mermaid
-graph TD
-    A[Forward/Backward Pass] --> B(Full Gradient G<br/>Dim: m × n)
+ graph TD
+    A["Forward/Backward Pass"] --> B["Full Gradient G<br/>Dim: m × n"]
 
-    B -->|SVD / Low-Rank Approximation<br/>Rank: r| C[Projection Matrices P, Q<br/>P: m × r | Q: n × r]
+    B -->|"SVD / Low-Rank Approximation<br/>Rank: r"| C["Projection Matrices P, Q<br/>P: m × r, Q: n × r"]
 
-    C -->|Down-Projection| D(Compressed Gradient G̃ = PᵀGQ<br/>Dim: r × r)
+    C -->|"Down-Projection"| D["Compressed Gradient G̃ = PᵀGQ<br/>Dim: r × r"]
 
-    D -->|AdamW<br/>Track m, v in Compressed Space| E[Compressed Update ΔG̃<br/>Dim: r × r]
+    D -->|"AdamW<br/>Track m, v in Compressed Space"| E["Compressed Update ΔG̃<br/>Dim: r × r"]
 
-    E -->|Up-Projection| F(Full-Space Update ΔG = P ΔG̃ Qᵀ<br/>Dim: m × n)
+    E -->|"Up-Projection"| F["Full-Space Update ΔG = PΔG̃Qᵀ<br/>Dim: m × n"]
 
-    F -->|Apply Update| G[Weights W ← W − ηΔG<br/>Dim: m × n]
+    F -->|"Apply Update"| G["Weights W ← W − ηΔG<br/>Dim: m × n"]
 
-    G -.->|Every T Steps<br/>update_proj_gap| B
+    G -.->|"Every T Steps<br/>update_proj_gap"| B
 ```
 
 
