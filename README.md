@@ -24,17 +24,14 @@ The GPU maps out and tracks the entire, massive gradient blueprint on a huge can
 ## 2. Core Architecture Loop
 GaLoRE achieves full-parameter training efficiency by applying **Singular Value Decomposition (SVD)** to the *gradients*, rather than freezing weights or using adapters.
 
-
-[Forward/Backward Pass] ──> Full Gradient Matrix (G)
-│
-▼ (SVD Truncation)
-Low-Rank Projections (P, Q)
-│
-▼ (Down-Projection)
-Compressed Core (G̃ = PᵀGQ)
-│
-▼ (AdamW State Tracking)
-Update Weights Directly (P G̃ Qᵀ)
+```mermaid
+graph TD
+    A[Forward/Backward Pass] --> B(Full Gradient Matrix G<br/>Dim: m × n)
+    B -->|SVD Truncation<br/>Rank: r| C[Low-Rank Projections P, Q<br/>P: m × r | Q: n × r]
+    C -->|Down-Projection| D(Compressed Core G̃ = PᵀGQ<br/>Dim: r × r)
+    D -->|AdamW State Tracking| E[Update Weights Directly P G̃ Qᵀ<br/>Dim: m × n]
+    E -.->|Every T Steps<br/>update_proj_gap| B
+```
 
 
 1. **The Backward Pass:** The model performs a standard pass, generating a full-sized gradient matrix G (size m × n) for a given weight layer.
